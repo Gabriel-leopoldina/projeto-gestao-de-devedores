@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-
 import {
   Container,
   Typography,
@@ -10,20 +9,20 @@ import {
   Snackbar,
   Alert,
   Dialog,
+  MenuItem,
   DialogTitle,
   DialogContent,
   DialogActions,
 } from '@mui/material'
-
+import SearchIcon from '@mui/icons-material/Search'
 import { api } from '../services/api.js'
 import DevedoresTable from '../components/DevedoresTable.jsx'
 import NovoDevedorDialog from '../components/NovoDevedorDialog.jsx'
-
-
-
 export default function DevedoresPage() {
   const [devedores, setDevedores] = useState([])
+  const [devedoresFiltrados, setDevedoresFiltrados] = useState([])
   const [loading, setLoading] = useState(true)
+  const [campoPesquisa, setCampoPesquisa] = useState('nome')
   const [pesquisa, setPesquisa] = useState('')
   const [openNovoDevedor, setOpenNovoDevedor] = useState(false)
   const [erro, setErro] = useState('')
@@ -32,58 +31,73 @@ export default function DevedoresPage() {
   const [openExcluir, setOpenExcluir] = useState(false)
   const [devedorExcluir, setDevedorExcluir] = useState(null)
   const [devedorEditando, setDevedorEditando] = useState(null)
-
+  
   async function carregarDevedores() {
     setLoading(true)
-
     try {
       const { data } = await api.get('/devedores')
       setDevedores(data)
+      setDevedoresFiltrados([...data])
     } catch (e) {
       setErro('Erro ao carregar devedores')
     } finally {
       setLoading(false)
     }
   }
-
+  
   useEffect(() => {
     carregarDevedores()
   }, [])
-
-const devedoresFiltrados = devedores.filter((devedor) => {
-  const texto = pesquisa.toLowerCase()
-
-  return (
-    devedor.nome?.toLowerCase().includes(texto) ||
-    devedor.cpf?.includes(texto) ||
-    devedor.cnpj?.includes(texto) ||
-    devedor.telefone?.includes(texto)
-  )
-})
-
+  
   function abrirModalNovo() {
     setErro('')
     setDevedorEditando(null)
     setOpenNovoDevedor(true)
   }
-  
-  function abrirDialogExcluir(devedor) {
-  setDevedorExcluir(devedor)
-  setOpenExcluir(true)
-}
-
   function abrirModalEditar(devedor) {
     setErro('')
     setDevedorEditando(devedor)
     setOpenNovoDevedor(true)
   }
-
   function fecharModal() {
     setOpenNovoDevedor(false)
     setErro('')
     setDevedorEditando(null)
   }
-
+  function abrirDialogExcluir(devedor) {
+    setDevedorExcluir(devedor)
+    setOpenExcluir(true)
+  }
+  function fecharDialogExcluir() {
+    setOpenExcluir(false)
+    setDevedorExcluir(null)
+  }
+  function pesquisar() {
+    const texto = pesquisa.trim().toLowerCase()
+    if (!texto) {
+      setDevedoresFiltrados(devedores)
+      return
+    }
+    const resultado = devedores.filter((devedor) => {
+      switch (campoPesquisa) {
+        case 'nome':
+          return devedor.nome?.toLowerCase().includes(texto)
+        case 'cpf':
+          return devedor.cpf?.includes(texto)
+        case 'cnpj':
+          return devedor.cnpj?.includes(texto)
+        case 'telefone':
+          return devedor.telefone?.includes(texto)
+        default:
+          return true
+      }
+    })
+    setDevedoresFiltrados(resultado)
+  }
+  function limparPesquisa() {
+    setPesquisa('')
+    setDevedoresFiltrados(devedores)
+  }
   async function salvarDevedor(payload) {
     try {
       if (devedorEditando) {
@@ -93,7 +107,6 @@ const devedoresFiltrados = devedores.filter((devedor) => {
         await api.post('/devedores', payload)
         setMensagemSnackbar('Devedor salvo com sucesso!')
       }
-
       setSnackbar(true)
       fecharModal()
       carregarDevedores()
@@ -101,54 +114,29 @@ const devedoresFiltrados = devedores.filter((devedor) => {
       setErro('Erro ao salvar devedor')
     }
   }
-
   async function confirmarExclusao() {
-  try {
-    await api.delete(`/devedores/${devedorExcluir.id}`)
-
-    setMensagemSnackbar('Devedor excluído com sucesso!')
-    setSnackbar(true)
-
-    setOpenExcluir(false)
-    setDevedorExcluir(null)
-
-    carregarDevedores()
-  } catch (e) {
-    setMensagemSnackbar('Erro ao excluir devedor')
-    setSnackbar(true)
+    try {
+      await api.delete(`/devedores/${devedorExcluir.id}`)
+      setMensagemSnackbar('Devedor excluído com sucesso!')
+      setSnackbar(true)
+      fecharDialogExcluir()
+      carregarDevedores()
+    } catch (e) {
+      setMensagemSnackbar('Erro ao excluir devedor')
+      setSnackbar(true)
+    }
   }
-}
-
-      async function confirmarExclusao() {
-  try {
-    await api.delete(`/devedores/${devedorExcluir.id}`)
-
-    setMensagemSnackbar('Devedor excluído com sucesso!')
-    setSnackbar(true)
-
-    setOpenExcluir(false)
-    setDevedorExcluir(null)
-
-    carregarDevedores()
-  } catch (e) {
-    setMensagemSnackbar('Erro ao excluir devedor')
-    setSnackbar(true)
-  }
-}
-
   return (
     <Container
-    maxWidth="lg"
-    sx={{
-    py: 5,
-  }}
->
+      maxWidth="lg"
+      sx={{
+        py: 5,
+      }}
+    >
       <Stack spacing={2}>
         <Typography variant="h4">
           Sistema de Devedores
         </Typography>
-        
-
         <Paper sx={{ p: 2 }}>
           <Stack
             direction="row"
@@ -159,7 +147,6 @@ const devedoresFiltrados = devedores.filter((devedor) => {
             <Typography variant="h6">
               Devedores
             </Typography>
-
             <Button
               variant="contained"
               onClick={abrirModalNovo}
@@ -167,14 +154,60 @@ const devedoresFiltrados = devedores.filter((devedor) => {
               Novo Devedor
             </Button>
           </Stack>
-
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ mb: 2 }}
+          >
+            <TextField
+              select
+              label="Filtrar por"
+              value={campoPesquisa}
+              onChange={(e) => setCampoPesquisa(e.target.value)}
+              sx={{ width: 180 }}
+            >
+              <MenuItem value="nome">Nome</MenuItem>
+              <MenuItem value="cpf">CPF</MenuItem>
+              <MenuItem value="cnpj">CNPJ</MenuItem>
+              <MenuItem value="telefone">Telefone</MenuItem>
+            </TextField>
+            <TextField
+              label="Pesquisar"
+              value={pesquisa}
+              onChange={(e) => setPesquisa(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  pesquisar()
+                }
+              }}
+              fullWidth
+            />
+            <Button
+              variant="contained"
+              startIcon={<SearchIcon />}
+              onClick={pesquisar}
+              sx={{
+                minWidth: 160,
+              }}
+            >
+              Pesquisar
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={limparPesquisa}
+              sx={{
+                minWidth: 120,
+              }}
+            >
+              Limpar
+            </Button>
+          </Stack>
           <DevedoresTable
-            devedores={devedores}
+            devedores={devedoresFiltrados}
             loading={loading}
             onEditar={abrirModalEditar}
             onExcluir={abrirDialogExcluir}
           />
-
           <NovoDevedorDialog
             open={openNovoDevedor}
             onClose={fecharModal}
@@ -183,40 +216,37 @@ const devedoresFiltrados = devedores.filter((devedor) => {
             setErro={setErro}
             initialData={devedorEditando}
           />
-
-<Dialog
-  open={openExcluir}
-  onClose={() => setOpenExcluir(false)}
->
-  <DialogTitle>Excluir devedor</DialogTitle>
-
-  <DialogContent>
-    Tem certeza que deseja excluir{' '}
-    <strong>{devedorExcluir?.nome}</strong>?
-  </DialogContent>
-
-  <DialogActions>
-    <Button onClick={() => setOpenExcluir(false)}>
-      Cancelar
-    </Button>
-
-    <Button
-      color="error"
-      variant="contained"
-      onClick={confirmarExclusao}
-    >
-      Excluir
-    </Button>
-  </DialogActions>
-</Dialog>
-
+          <Dialog
+            open={openExcluir}
+            onClose={fecharDialogExcluir}
+          >
+            <DialogTitle>
+              Excluir devedor
+            </DialogTitle>
+            <DialogContent>
+              Tem certeza que deseja excluir{' '}
+              <strong>{devedorExcluir?.nome}</strong>?
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={fecharDialogExcluir}>
+                Cancelar
+              </Button>
+              <Button
+                color="error"
+                variant="contained"
+                onClick={confirmarExclusao}
+              >
+                Excluir
+              </Button>
+            </DialogActions>
+          </Dialog>
           <Snackbar
             open={snackbar}
             autoHideDuration={3000}
             onClose={() => setSnackbar(false)}
           >
             <Alert
-              severity="success"
+              severity={mensagemSnackbar.includes('Erro') ? 'error' : 'success'}
               sx={{ width: '100%' }}
             >
               {mensagemSnackbar}

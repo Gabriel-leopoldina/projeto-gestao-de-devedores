@@ -16,13 +16,18 @@ export default class Divida extends BaseModel {
   @column()
   declare valor: number
 
+  @column.date()
+  declare data_vencimento: DateTime
+
+  @column()
+  declare status: 'PENDENTE' | 'PAGA'
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  //RELACIONAMENTO
   @belongsTo(() => Devedor)
   declare devedor: BelongsTo<typeof Devedor>
 }

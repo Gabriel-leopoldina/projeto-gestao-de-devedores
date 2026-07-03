@@ -15,7 +15,12 @@ export default class DividasController {
     const devedor = await Devedor.find(params.id)
     if (!devedor) return response.notFound({ message: 'Devedor não encontrado' })
 
-    const data = request.only(['descricao','valor'])
+    const data = request.only([
+      'descricao',
+      'valor',
+      'data_vencimento',
+      'status',
+    ])
 
     const divida = await Divida.create({
       ...data,
@@ -29,7 +34,12 @@ export default class DividasController {
     const divida = await Divida.find(params.id)
     if (!divida) return response.notFound({ message: 'Dívida não encontrada' })
 
-    const data = request.only(['descricao','valor'])
+    const data = request.only([
+      'descricao',
+      'valor',
+      'data_vencimento',
+      'status',
+    ])
     divida.merge(data)
     await divida.save()
 
