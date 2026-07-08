@@ -82,10 +82,8 @@ export default function DevedoresPage() {
       switch (campoPesquisa) {
         case 'nome':
           return devedor.nome?.toLowerCase().includes(texto)
-        case 'cpf':
-          return devedor.cpf?.includes(texto)
-        case 'cnpj':
-          return devedor.cnpj?.includes(texto)
+        case 'documento':
+          return devedor.cpf?.includes(texto) || devedor.cnpj?.includes(texto)
         case 'telefone':
           return devedor.telefone?.includes(texto)
         default:
@@ -94,10 +92,7 @@ export default function DevedoresPage() {
     })
     setDevedoresFiltrados(resultado)
   }
-  function limparPesquisa() {
-    setPesquisa('')
-    setDevedoresFiltrados(devedores)
-  }
+  
   async function salvarDevedor(payload) {
     try {
       if (devedorEditando) {
@@ -127,16 +122,7 @@ export default function DevedoresPage() {
     }
   }
   return (
-    <Container
-      maxWidth="lg"
-      sx={{
-        py: 5,
-      }}
-    >
       <Stack spacing={2}>
-        <Typography variant="h4">
-          Sistema de Devedores
-        </Typography>
         <Paper sx={{ p: 2 }}>
           <Stack
             direction="row"
@@ -149,7 +135,11 @@ export default function DevedoresPage() {
             </Typography>
             <Button
               variant="contained"
+              borderradius={1}
               onClick={abrirModalNovo}
+              sx={{
+                minWidth: 160,
+              }}
             >
               Novo Devedor
             </Button>
@@ -167,8 +157,7 @@ export default function DevedoresPage() {
               sx={{ width: 180 }}
             >
               <MenuItem value="nome">Nome</MenuItem>
-              <MenuItem value="cpf">CPF</MenuItem>
-              <MenuItem value="cnpj">CNPJ</MenuItem>
+              <MenuItem value="documento">CPF/CNPJ</MenuItem>
               <MenuItem value="telefone">Telefone</MenuItem>
             </TextField>
             <TextField
@@ -184,6 +173,7 @@ export default function DevedoresPage() {
             />
             <Button
               variant="contained"
+              borderRadius={1}
               startIcon={<SearchIcon />}
               onClick={pesquisar}
               sx={{
@@ -192,15 +182,7 @@ export default function DevedoresPage() {
             >
               Pesquisar
             </Button>
-            <Button
-              variant="outlined"
-              onClick={limparPesquisa}
-              sx={{
-                minWidth: 120,
-              }}
-            >
-              Limpar
-            </Button>
+            
           </Stack>
           <DevedoresTable
             devedores={devedoresFiltrados}
@@ -254,6 +236,5 @@ export default function DevedoresPage() {
           </Snackbar>
         </Paper>
       </Stack>
-    </Container>
   )
 }

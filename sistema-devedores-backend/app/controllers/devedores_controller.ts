@@ -21,7 +21,7 @@ const updateDevedorValidator = vine.compile(
   })
 )
 
-// 🔹 Função para limpar máscara
+
 function limparNumero(valor: string) {
   return valor.replace(/\D/g, '')
 }
@@ -48,12 +48,11 @@ export default class DevedoresController {
   async store({ request, response }: HttpContext) {
     let { nome, cpf, cnpj, telefone } = await request.validateUsing(createDevedorValidator)
 
-    // 🔹 regra: precisa ter CPF ou CNPJ
+  
     if (!cpf && !cnpj) {
       return response.badRequest({ erro: 'Informe CPF ou CNPJ' })
     }
 
-    // 🔹 regra: não pode ter os dois
     if (cpf && cnpj) {
       return response.badRequest({ erro: 'Informe apenas CPF ou CNPJ' })
     }
@@ -110,7 +109,7 @@ export default class DevedoresController {
       }
     }
 
-    // 🔹 limpar telefone
+  
     telefone = telefone ? limparNumero(telefone) : undefined
 
     devedor.merge({
