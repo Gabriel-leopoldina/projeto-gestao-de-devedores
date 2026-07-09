@@ -12,6 +12,7 @@ import {
 
 import GroupIcon from '@mui/icons-material/Group'
 import HomeIcon from '@mui/icons-material/Home'
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
 import { Outlet, Link, useLocation } from 'react-router-dom'
 
@@ -72,6 +73,14 @@ export default function Layout() {
             <ListItemText primary="Devedores" />
           </ListItemButton>
 
+
+          <ListItemButton component={Link} to="/dividas">
+            <ListItemIcon>
+              <AccountBalanceIcon />
+            </ListItemIcon>
+
+          <ListItemText primary="Dívidas" />
+        </ListItemButton>
         </List>
 
       </Drawer>

@@ -4,6 +4,7 @@ import Layout from './layout/Layout.jsx'
 import DevedoresPage from './pages/DevedoresPage.jsx'
 import DividasPage from './pages/DividasPage.jsx'
 import HomePage from './pages/HomePage'
+import TodasDividasPage from './pages/TodasDividasPage.jsx'
 
 export default function App() {
   return (
@@ -23,6 +24,11 @@ export default function App() {
             path="/devedores"
             element={<DevedoresPage />}
           />
+
+          <Route
+          path="/dividas"
+          element={<TodasDividasPage />}
+        />
 
             <Route
               path="/devedores/:id/dividas"
