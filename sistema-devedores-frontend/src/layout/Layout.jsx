@@ -12,7 +12,7 @@ import {
 
 import GroupIcon from '@mui/icons-material/Group'
 import HomeIcon from '@mui/icons-material/Home'
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 import { Outlet, Link, useLocation } from 'react-router-dom'
 
@@ -76,7 +76,7 @@ export default function Layout() {
 
           <ListItemButton component={Link} to="/dividas">
             <ListItemIcon>
-              <AccountBalanceIcon />
+              <AttachMoneyIcon />
             </ListItemIcon>
 
           <ListItemText primary="Dívidas" />

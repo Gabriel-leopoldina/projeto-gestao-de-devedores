@@ -35,7 +35,11 @@ export default function DevedoresPage() {
   async function carregarDevedores() {
     setLoading(true)
     try {
-      const { data } = await api.get('/devedores')
+      const { data } = await api.get('/devedores', {
+         params: {
+         pesquisa,
+         },
+        })
       setDevedores(data)
       setDevedoresFiltrados([...data])
     } catch (e) {

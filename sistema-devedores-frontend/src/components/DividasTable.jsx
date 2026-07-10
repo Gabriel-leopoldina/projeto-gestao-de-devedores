@@ -17,19 +17,20 @@ export default function DividasTable({
   loading,
   onEditar,
   onExcluir,
+  mostrarDevedor = false,
 }) {
   if (loading) {
     return <CircularProgress />
   }
 
-  // Função para formatar a data sem sofrer com fuso horário
+
   function formatarDataBrasileira(dataString) {
     if (!dataString) return '-'
 
     const dataBruta = String(dataString).trim()
-    const apenasData = dataBruta.split('T')[0] // Corta qualquer hora que vier junto
+    const apenasData = dataBruta.split('T')[0] 
 
-    // Se estiver no padrão AAAA-MM-DD, inverte para DD/MM/AAAA
+   
     if (apenasData.includes('-')) {
       const [ano, mes, dia] = apenasData.split('-')
       return `${dia}/${mes}/${ano}`
@@ -46,7 +47,6 @@ export default function DividasTable({
       }
     }
 
-    // Pega a data correta independente de como a API mandar
     const dataVenc = divida.data_vencimento || divida.dataVencimento || divida.vencimento
 
     if (!dataVenc) {
@@ -59,8 +59,6 @@ export default function DividasTable({
     const hoje = new Date()
     hoje.setHours(0, 0, 0, 0)
 
-    // TRUQUE DO FUSO HORÁRIO NO STATUS:
-    // Adicionamos meio-dia para o JavaScript não jogar a data pro dia anterior
     let dataCorrigida = String(dataVenc).split('T')[0]
     const vencimento = new Date(`${dataCorrigida}T12:00:00`)
     vencimento.setHours(0, 0, 0, 0)
@@ -78,89 +76,115 @@ export default function DividasTable({
     }
   }
 
-  const rows = dividas.map((divida) => ({
-    id: divida.id,
-    descricao: divida.descricao,
-    valor: Number(divida.valor).toFixed(2),
-    // Garantindo que vai pegar o nome correto do banco
-    data_vencimento: divida.data_vencimento || divida.dataVencimento || divida.vencimento,
-    status: divida.status,
-    original: divida,
-  }))
+ const rows = dividas.map((divida) => ({
+  id: divida.id,
 
-  const columns = [
+  devedor: divida.devedor?.nome || '',
+  cpfCnpj: divida.devedor?.cpf || divida.devedor?.cnpj || '',
+
+  descricao: divida.descricao,
+  valor: Number(divida.valor).toFixed(2),
+
+  data_vencimento:
+    divida.data_vencimento ||
+    divida.dataVencimento ||
+    divida.vencimento,
+
+  status: divida.status,
+
+  original: divida,
+}))
+
+const columns = [
+  {
+    field: 'descricao',
+    headerName: 'Descrição',
+    flex: 1.5,
+    minWidth: 220,
+  },
+  {
+    field: 'valor',
+    headerName: 'Valor',
+    flex: 1,
+    minWidth: 120,
+    renderCell: (params) => <>R$ {params.value}</>,
+  },
+  {
+    field: 'data_vencimento',
+    headerName: 'Vencimento',
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => formatarDataBrasileira(params.value),
+  },
+  {
+    field: 'status',
+    headerName: 'Status',
+    flex: 1,
+    minWidth: 150,
+    renderCell: (params) => {
+      const status = obterStatus(params.row.original)
+
+      return (
+        <Chip
+          label={status.texto}
+          color={status.cor}
+          size="small"
+        />
+      )
+    },
+  },
+  {
+    field: 'acoes',
+    headerName: 'Ações',
+    width: 150,
+    sortable: false,
+    filterable: false,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <Stack
+        direction="row"
+        spacing={1}
+        justifyContent="center"
+        alignItems="center"
+        sx={{ height: '100%' }}
+      >
+        <IconButton
+          color="primary"
+          onClick={() => onEditar?.(params.row.original)}
+        >
+          <EditIcon />
+        </IconButton>
+
+        <IconButton
+          color="error"
+          onClick={() => onExcluir?.(params.row.original)}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Stack>
+    ),
+  },
+]
+
+if (mostrarDevedor) {
+  columns.unshift(
     {
-      field: 'descricao',
-      headerName: 'Descrição',
+      field: 'cpfCnpj',
+      headerName: 'CPF/CNPJ',
+      flex: 1,
+      minWidth: 170,
+    },
+    {
+      field: 'devedor',
+      headerName: 'Devedor',
       flex: 1.5,
       minWidth: 220,
-    },
-    {
-      field: 'valor',
-      headerName: 'Valor',
-      flex: 1,
-      minWidth: 120,
-      renderCell: (params) => (
-        <>R$ {params.value}</>
-      ),
-    },
-    {
-      field: 'data_vencimento',
-      headerName: 'Vencimento',
-      flex: 1,
-      minWidth: 150,
-      
-      renderCell: (params) => formatarDataBrasileira(params.value),
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      flex: 1,
-      minWidth: 150,
-      renderCell: (params) => {
-        const status = obterStatus(params.row.original)
-        return (
-          <Chip
-            label={status.texto}
-            color={status.cor}
-            size="small"
-          />
-        )
-      },
-    },
-    {
-      field: 'acoes',
-      headerName: 'Ações',
-      width: 150,
-      sortable: false,
-      filterable: false,
-      headerAlign: 'center', 
-      align: 'center',  
-      renderCell: (params) => (
-        <Stack 
-          direction="row" 
-          spacing={1} 
-          justifyContent="center"
-          alignItems="center"  
-          sx={{ height: '100%' }}
-        >
-          <IconButton
-            color="primary"
-            onClick={() => onEditar(params.row.original)}
-          >
-            <EditIcon />
-          </IconButton>
+    }
+  )
+}
 
-          <IconButton
-            color="error"
-            onClick={() => onExcluir(params.row.original)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Stack>
-      ),
-    },
-  ]
+  
 
   if (rows.length === 0) {
     return (

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import DividasTable from '../components/DividasTable.jsx'
 import {
   Typography,
+  Paper,
   Stack,
   Button,
   Dialog,
@@ -145,11 +146,6 @@ export default function DividasPage() {
     setDividasFiltradas(resultado)
   }
 
-  function limparPesquisa() {
-    setPesquisa('')
-    setDividasFiltradas(dividas)
-  }
-
   async function salvarDivida() {
     try {
       let dataCorrigida = dataVencimento;
@@ -202,81 +198,85 @@ export default function DividasPage() {
 
   return (
     <>
-      <Stack spacing={3} sx={{ mt: 3, px: 2 }}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Typography variant="h4">
-            Dívidas de {devedor?.nome}
-          </Typography>
-
-          <Button
-            variant="contained"
-            sx={{ minWidth: 160 }}
-            onClick={abrirModalNovaDivida}
+      <Stack spacing={2}>
+        <Paper sx={{ p: 2 }}>
+          
+          {/* Linha 1: Título e Botão Nova Dívida alinhados nas pontas */}
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ mb: 2 }}
           >
-            Nova Dívida
-          </Button>
-        </Stack>
+            <Typography variant="h6">
+              Dívidas de {devedor?.nome}
+            </Typography>
+            
+            <Button
+              variant="contained"
+              onClick={abrirModalNovaDivida}
+              sx={{
+                minWidth: 160,
+              }}
+            >
+              Nova Dívida
+            </Button>
+          </Stack>
 
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ mb: 2 }}
-        >
-          <TextField
-            select
-            label="Filtrar por"
-            value={campoPesquisa}
-            onChange={(e) => setCampoPesquisa(e.target.value)}
-            sx={{ width: 180 }}
+          {/* Linha 2: Filtros e Botão de Pesquisar */}
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ mb: 2 }}
           >
-            <MenuItem value="descricao">Descrição</MenuItem>
-            <MenuItem value="valor">Valor</MenuItem>
-            <MenuItem value="data_vencimento">Vencimento</MenuItem>
-            <MenuItem value="status">Status</MenuItem>
-          </TextField>
+            <TextField
+              select
+              label="Filtrar por"
+              value={campoPesquisa}
+              onChange={(e) => setCampoPesquisa(e.target.value)}
+              sx={{ width: 180 }}
+            >
+              <MenuItem value="descricao">Descrição</MenuItem>
+              <MenuItem value="valor">Valor</MenuItem>
+              <MenuItem value="data_vencimento">Vencimento</MenuItem>
+              <MenuItem value="status">Status</MenuItem>
+            </TextField>
 
-          <TextField
-            label="Pesquisar"
-            value={pesquisa}
-            onChange={(e) => setPesquisa(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') pesquisar()
-            }}
-            fullWidth
+            <TextField
+              label="Pesquisar"
+              value={pesquisa}
+              onChange={(e) => setPesquisa(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  pesquisar()
+                }
+              }}
+              fullWidth
+            />
+
+            <Button
+              variant="contained"
+              startIcon={<SearchIcon />}
+              onClick={pesquisar}
+              sx={{
+                minWidth: 160,
+              }}
+            >
+              Pesquisar
+            </Button>
+          </Stack>
+
+          <DividasTable
+            dividas={dividasFiltradas}
+            loading={loading}
+            onEditar={abrirModalEditar}
+            onExcluir={abrirDialogExcluir}
           />
-
-          <Button
-            variant="contained"
-            startIcon={<SearchIcon />}
-            onClick={pesquisar}
-            sx={{ minWidth: 160 }}
-          >
-            Pesquisar
-          </Button>
-        </Stack>
-
-        <DividasTable
-          dividas={dividasFiltradas}
-          loading={loading}
-          onEditar={abrirModalEditar}
-          onExcluir={abrirDialogExcluir}
-        />
-
-        <Typography
-          sx={{
-            mt: 2,
-            textAlign: 'right',
-            fontWeight: 'bold',
-          }}
-        >
-          Total: R$ {total.toFixed(2)}
-        </Typography>
+          
+        </Paper>
       </Stack>
 
+  
       <Dialog open={openDialog} onClose={fecharModal}>
         <DialogTitle>
           {dividaEditando ? 'Editar Dívida' : 'Nova Dívida'}
@@ -334,6 +334,7 @@ export default function DividasPage() {
         </DialogActions>
       </Dialog>
 
+      {/* Modal - Confirmar Exclusão */}
       <Dialog open={openExcluir} onClose={fecharDialogExcluir}>
         <DialogTitle>
           Excluir dívida?
@@ -358,6 +359,7 @@ export default function DividasPage() {
         </DialogActions>
       </Dialog>
 
+      {/* Notificação de Erros */}
       <Snackbar 
         open={!!erro} 
         autoHideDuration={5000} 

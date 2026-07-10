@@ -2,7 +2,7 @@ import Devedor from '#models/devedor'
 import type { HttpContext } from '@adonisjs/core/http'
 import vine from '@vinejs/vine'
 
-// 🔹 Validators
+
 const createDevedorValidator = vine.compile(
   vine.object({
     nome: vine.string().minLength(3),
@@ -28,12 +28,26 @@ function limparNumero(valor: string) {
 
 export default class DevedoresController {
 
-  // 📄 LISTAR
-  async index() {
-    return await Devedor.all()
+
+async index({ request }: HttpContext) {
+  const pesquisa = request.input('pesquisa')
+
+  const query = Devedor.query()
+
+  if (pesquisa) {
+    query.where((builder) => {
+      builder
+        .whereILike('nome', `%${pesquisa}%`)
+        .orWhereILike('cpf', `%${pesquisa}%`)
+        .orWhereILike('cnpj', `%${pesquisa}%`)
+        .orWhereILike('telefone', `%${pesquisa}%`)
+    })
   }
 
-  // 🔍 BUSCAR POR ID
+  return await query.orderBy('nome')
+}
+
+  
   async show({ params, response }: HttpContext) {
     const devedor = await Devedor.find(params.id)
 
@@ -44,7 +58,7 @@ export default class DevedoresController {
     return devedor
   }
 
-  // ➕ CRIAR
+  
   async store({ request, response }: HttpContext) {
     let { nome, cpf, cnpj, telefone } = await request.validateUsing(createDevedorValidator)
 
@@ -57,12 +71,12 @@ export default class DevedoresController {
       return response.badRequest({ erro: 'Informe apenas CPF ou CNPJ' })
     }
 
-    // 🔹 limpar máscara
+    
     cpf = cpf ? limparNumero(cpf) : undefined
     cnpj = cnpj ? limparNumero(cnpj) : undefined
     telefone = telefone ? limparNumero(telefone) : undefined
 
-    // 🔹 valida tamanho
+    
     if (cpf && cpf.length !== 11) {
       return response.badRequest({ erro: 'CPF inválido' })
     }
@@ -81,7 +95,7 @@ export default class DevedoresController {
     return devedor
   }
 
-  // ✏️ EDITAR
+
   async update({ params, request, response }: HttpContext) {
     const devedor = await Devedor.find(params.id)
 
@@ -91,7 +105,7 @@ export default class DevedoresController {
 
     let { nome, cpf, cnpj, telefone } = await request.validateUsing(updateDevedorValidator)
 
-    // 🔹 só valida se veio CPF ou CNPJ
+
     if (cpf || cnpj) {
       if (cpf && cnpj) {
         return response.badRequest({ erro: 'Informe apenas CPF ou CNPJ' })
@@ -124,7 +138,6 @@ export default class DevedoresController {
     return devedor
   }
 
-  // ❌ DELETAR
   async destroy({ params, response }: HttpContext) {
     const devedor = await Devedor.find(params.id)
 
