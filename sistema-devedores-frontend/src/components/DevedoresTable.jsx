@@ -114,10 +114,18 @@ export default function DevedoresTable({
     headerName: 'Ações',
     width: 180,
     sortable: false,
+    headerAlign: 'center',
+    align: 'center',
     filterable: false,
 
     renderCell: (params) => (
-  <Stack direction="row" spacing={1}>
+    <Stack
+        direction="row"
+        spacing={1}
+        justifyContent="center"
+        alignItems="center"
+        sx={{ height: '100%' }}
+      >
     <IconButton
       color="primary"
       onClick={() => onEditar(params.row.original)}

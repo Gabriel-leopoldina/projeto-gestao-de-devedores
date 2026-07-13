@@ -30,18 +30,55 @@ export default class DevedoresController {
 
 
 async index({ request }: HttpContext) {
-  const pesquisa = request.input('pesquisa')
+  console.log(request.qs())
+  
+  const campo = request.input('campo')
+  let pesquisa = request.input('pesquisa') || ''
+
+
+  if (campo === 'cpf' || campo === 'cnpj' || campo === 'telefone' || campo === 'documento') {
+    pesquisa = limparNumero(pesquisa)
+  }
 
   const query = Devedor.query()
 
   if (pesquisa) {
-    query.where((builder) => {
-      builder
-        .whereILike('nome', `%${pesquisa}%`)
-        .orWhereILike('cpf', `%${pesquisa}%`)
-        .orWhereILike('cnpj', `%${pesquisa}%`)
-        .orWhereILike('telefone', `%${pesquisa}%`)
-    })
+    switch (campo) {
+      case 'nome':
+        query.whereILike('nome', `%${pesquisa}%`)
+        break
+
+      case 'cpf':
+        query.whereILike('cpf', `%${pesquisa}%`)
+        break
+
+      case 'cnpj':
+        query.whereILike('cnpj', `%${pesquisa}%`)
+        break
+
+      case 'documento':
+        query.where((builder) => {
+          builder
+            .whereILike('cpf', `%${pesquisa}%`)
+            .orWhereILike('cnpj', `%${pesquisa}%`)
+        })
+        break
+
+      case 'telefone':
+        query.whereILike('telefone', `%${pesquisa}%`)
+        break
+
+      default:
+        query.where((builder) => {
+
+          const pesquisaLimpa = limparNumero(pesquisa)
+          builder
+            .whereILike('nome', `%${pesquisa}%`)
+            .orWhereILike('cpf', `%${pesquisaLimpa}%`)
+            .orWhereILike('cnpj', `%${pesquisaLimpa}%`)
+            .orWhereILike('telefone', `%${pesquisaLimpa}%`)
+        })
+    }
   }
 
   return await query.orderBy('nome')

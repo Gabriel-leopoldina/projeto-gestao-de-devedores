@@ -18,6 +18,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { api } from '../services/api.js'
 import DevedoresTable from '../components/DevedoresTable.jsx'
 import NovoDevedorDialog from '../components/NovoDevedorDialog.jsx'
+
 export default function DevedoresPage() {
   const [devedores, setDevedores] = useState([])
   const [devedoresFiltrados, setDevedoresFiltrados] = useState([])
@@ -35,11 +36,7 @@ export default function DevedoresPage() {
   async function carregarDevedores() {
     setLoading(true)
     try {
-      const { data } = await api.get('/devedores', {
-         params: {
-         pesquisa,
-         },
-        })
+      const { data } = await api.get('/devedores')
       setDevedores(data)
       setDevedoresFiltrados([...data])
     } catch (e) {
@@ -58,43 +55,47 @@ export default function DevedoresPage() {
     setDevedorEditando(null)
     setOpenNovoDevedor(true)
   }
+
   function abrirModalEditar(devedor) {
     setErro('')
     setDevedorEditando(devedor)
     setOpenNovoDevedor(true)
   }
+
   function fecharModal() {
     setOpenNovoDevedor(false)
     setErro('')
     setDevedorEditando(null)
   }
+
   function abrirDialogExcluir(devedor) {
     setDevedorExcluir(devedor)
     setOpenExcluir(true)
   }
+
   function fecharDialogExcluir() {
     setOpenExcluir(false)
     setDevedorExcluir(null)
   }
-  function pesquisar() {
-    const texto = pesquisa.trim().toLowerCase()
-    if (!texto) {
-      setDevedoresFiltrados(devedores)
-      return
+  
+  // 🎯 CORREÇÃO: Função unificada buscando na API e removido o código fantasma que quebrava a página
+  async function pesquisar() {
+    setLoading(true)
+    try {
+      const { data } = await api.get('/devedores', {
+        params: {
+          campo: campoPesquisa,
+          pesquisa,
+        },
+      })
+      setDevedores(data)
+      setDevedoresFiltrados(data)
+    } catch (err) {
+      console.error(err)
+      setErro('Erro ao realizar a pesquisa.')
+    } finally {
+      setLoading(false)
     }
-    const resultado = devedores.filter((devedor) => {
-      switch (campoPesquisa) {
-        case 'nome':
-          return devedor.nome?.toLowerCase().includes(texto)
-        case 'documento':
-          return devedor.cpf?.includes(texto) || devedor.cnpj?.includes(texto)
-        case 'telefone':
-          return devedor.telefone?.includes(texto)
-        default:
-          return true
-      }
-    })
-    setDevedoresFiltrados(resultado)
   }
   
   async function salvarDevedor(payload) {
@@ -113,6 +114,7 @@ export default function DevedoresPage() {
       setErro('Erro ao salvar devedor')
     }
   }
+
   async function confirmarExclusao() {
     try {
       await api.delete(`/devedores/${devedorExcluir.id}`)
@@ -125,120 +127,127 @@ export default function DevedoresPage() {
       setSnackbar(true)
     }
   }
+
   return (
-      <Stack spacing={2}>
-        <Paper sx={{ p: 2 }}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ mb: 2 }}
+    <Stack spacing={2}>
+      <Paper sx={{ p: 2 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
+          <Typography variant="h6">
+            Devedores
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={abrirModalNovo}
+            sx={{
+              minWidth: 170,
+              borderRadius: 1,
+            }}
           >
-            <Typography variant="h6">
-              Devedores
-            </Typography>
-            <Button
-              variant="contained"
-              borderradius={1}
-              onClick={abrirModalNovo}
-              sx={{
-                minWidth: 160,
-              }}
-            >
-              Novo Devedor
-            </Button>
-          </Stack>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{ mb: 2 }}
+            Novo Devedor
+          </Button>
+        </Stack>
+
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ mb: 2 }}
+        >
+          <TextField
+            select
+            label="Filtrar por"
+            value={campoPesquisa}
+            onChange={(e) => setCampoPesquisa(e.target.value)}
+            sx={{ width: 180 }}
           >
-            <TextField
-              select
-              label="Filtrar por"
-              value={campoPesquisa}
-              onChange={(e) => setCampoPesquisa(e.target.value)}
-              sx={{ width: 180 }}
-            >
-              <MenuItem value="nome">Nome</MenuItem>
-              <MenuItem value="documento">CPF/CNPJ</MenuItem>
-              <MenuItem value="telefone">Telefone</MenuItem>
-            </TextField>
-            <TextField
-              label="Pesquisar"
-              value={pesquisa}
-              onChange={(e) => setPesquisa(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  pesquisar()
-                }
-              }}
-              fullWidth
-            />
-            <Button
-              variant="contained"
-              borderRadius={1}
-              startIcon={<SearchIcon />}
-              onClick={pesquisar}
-              sx={{
-                minWidth: 160,
-              }}
-            >
-              Pesquisar
-            </Button>
-            
-          </Stack>
-          <DevedoresTable
-            devedores={devedoresFiltrados}
-            loading={loading}
-            onEditar={abrirModalEditar}
-            onExcluir={abrirDialogExcluir}
+            <MenuItem value="nome">Nome</MenuItem>
+            <MenuItem value="documento">CPF/CNPJ</MenuItem>
+            <MenuItem value="telefone">Telefone</MenuItem>
+          </TextField>
+
+          <TextField
+            label="Pesquisar"
+            value={pesquisa}
+            onChange={(e) => setPesquisa(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                pesquisar()
+              }
+            }}
+            fullWidth
           />
-          <NovoDevedorDialog
-            open={openNovoDevedor}
-            onClose={fecharModal}
-            onSave={salvarDevedor}
-            erro={erro}
-            setErro={setErro}
-            initialData={devedorEditando}
-          />
-          <Dialog
-            open={openExcluir}
-            onClose={fecharDialogExcluir}
+
+          <Button
+            variant="contained"
+            startIcon={<SearchIcon />}
+            onClick={pesquisar}
+            sx={{
+              minWidth: 170,
+              borderRadius: 1,
+            }}
           >
-            <DialogTitle>
-              Excluir devedor
-            </DialogTitle>
-            <DialogContent>
-              Tem certeza que deseja excluir{' '}
-              <strong>{devedorExcluir?.nome}</strong>?
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={fecharDialogExcluir}>
-                Cancelar
-              </Button>
-              <Button
-                color="error"
-                variant="contained"
-                onClick={confirmarExclusao}
-              >
-                Excluir
-              </Button>
-            </DialogActions>
-          </Dialog>
-          <Snackbar
-            open={snackbar}
-            autoHideDuration={3000}
-            onClose={() => setSnackbar(false)}
-          >
-            <Alert
-              severity={mensagemSnackbar.includes('Erro') ? 'error' : 'success'}
-              sx={{ width: '100%' }}
+            Pesquisar
+          </Button>
+        </Stack>
+
+        <DevedoresTable
+          devedores={devedoresFiltrados}
+          loading={loading}
+          onEditar={abrirModalEditar}
+          onExcluir={abrirDialogExcluir}
+        />
+
+        <NovoDevedorDialog
+          open={openNovoDevedor}
+          onClose={fecharModal}
+          onSave={salvarDevedor}
+          erro={erro}
+          setErro={setErro}
+          initialData={devedorEditando}
+        />
+
+        <Dialog
+          open={openExcluir}
+          onClose={fecharDialogExcluir}
+        >
+          <DialogTitle>
+            Excluir devedor
+          </DialogTitle>
+          <DialogContent>
+            Tem certeza que deseja excluir{' '}
+            <strong>{devedorExcluir?.nome}</strong>?
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={fecharDialogExcluir}>
+              Cancelar
+            </Button>
+            <Button
+              color="error"
+              variant="contained"
+              onClick={confirmarExclusao}
             >
-              {mensagemSnackbar}
-            </Alert>
-          </Snackbar>
-        </Paper>
-      </Stack>
+              Excluir
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar
+          open={snackbar}
+          autoHideDuration={3000}
+          onClose={() => setSnackbar(false)}
+        >
+          <Alert
+            severity={mensagemSnackbar.includes('Erro') ? 'error' : 'success'}
+            sx={{ width: '100%' }}
+          >
+            {mensagemSnackbar}
+          </Alert>
+        </Snackbar>
+      </Paper>
+    </Stack>
   )
 }

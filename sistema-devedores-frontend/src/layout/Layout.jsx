@@ -12,18 +12,18 @@ import {
 
 import GroupIcon from '@mui/icons-material/Group'
 import HomeIcon from '@mui/icons-material/Home'
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
+import SettingsIcon from '@mui/icons-material/Settings'
 
 import { Outlet, Link, useLocation } from 'react-router-dom'
 
-const drawerWidth = 230
+const drawerWidth = 220
 
 export default function Layout() {
   const location = useLocation()
 
   return (
     <Box sx={{ display: 'flex' }}>
-
       <AppBar
         position="fixed"
         sx={{
@@ -42,17 +42,18 @@ export default function Layout() {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            // 1. Transformamos o Drawer em um container flexível em coluna
+            display: 'flex',
+            flexDirection: 'column', 
           },
         }}
       >
         <Toolbar />
 
         <List>
-
           <ListItemButton
             component={Link}
             to="/"
@@ -61,7 +62,6 @@ export default function Layout() {
             <ListItemIcon>
               <HomeIcon />
             </ListItemIcon>
-
             <ListItemText primary="Início" />
           </ListItemButton>
 
@@ -69,20 +69,27 @@ export default function Layout() {
             <ListItemIcon>
               <GroupIcon />
             </ListItemIcon>
-
             <ListItemText primary="Devedores" />
           </ListItemButton>
-
 
           <ListItemButton component={Link} to="/dividas">
             <ListItemIcon>
               <AttachMoneyIcon />
             </ListItemIcon>
-
-          <ListItemText primary="Dívidas" />
-        </ListItemButton>
+            <ListItemText primary="Dívidas" />
+          </ListItemButton>
         </List>
 
+        {/* 2. Envolvemos em um List com mt: 'auto' para jogar lá pro final */}
+        <List sx={{ mt: 'auto' }}>
+          <ListItemButton component={Link} to="/configuracoes">
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Configurações" />
+          </ListItemButton>
+        </List>
+        
       </Drawer>
 
       <Box
@@ -93,10 +100,8 @@ export default function Layout() {
         }}
       >
         <Toolbar />
-
         <Outlet />
       </Box>
-
     </Box>
   )
 }
