@@ -5,40 +5,48 @@ import DevedoresPage from './pages/DevedoresPage.jsx'
 import DividasPage from './pages/DividasPage.jsx'
 import HomePage from './pages/HomePage'
 import TodasDividasPage from './pages/TodasDividasPage.jsx'
+import ConfiguracoesPage from './pages/ConfiguracoesPage.jsx' // <-- Importei a tela nova aqui!
+import { SidebarThemeProvider } from './contexts/SidebarThemeContext'
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    // O Provider abraça toda a aplicação para o tema funcionar em qualquer lugar
+    <SidebarThemeProvider>
+      <BrowserRouter>
+        <Routes>
 
-        <Route element={<Layout />}>
+          <Route element={<Layout />}>
+            
+            <Route 
+              path="/" 
+              element={<HomePage />} 
+            />
 
-  
-          <Route 
-            path="/" 
-            element={<HomePage />} 
-          />
-          
+            <Route
+              path="/devedores"
+              element={<DevedoresPage />}
+            />
 
-          <Route
-            path="/devedores"
-            element={<DevedoresPage />}
-          />
-
-          <Route
-          path="/dividas"
-          element={<TodasDividasPage />}
-        />
+            <Route
+              path="/dividas"
+              element={<TodasDividasPage />}
+            />
 
             <Route
               path="/devedores/:id/dividas"
               element={<DividasPage />}
             />
 
-        </Route>
+           
+            <Route
+              path="/configuracoes"
+              element={<ConfiguracoesPage />}
+            />
 
-      </Routes>
-      
-    </BrowserRouter>
+          </Route>
+
+        </Routes>
+      </BrowserRouter>
+    </SidebarThemeProvider>
   )
 }

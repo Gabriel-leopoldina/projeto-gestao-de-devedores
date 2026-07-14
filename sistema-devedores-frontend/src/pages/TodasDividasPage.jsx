@@ -8,7 +8,7 @@ import {
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 
-import DividasTable from '../components/DividasTable'
+import DividasTable from '../components/TodasDividasTable'
 import { api } from '../services/api'
 
 export default function TodasDividasPage() {

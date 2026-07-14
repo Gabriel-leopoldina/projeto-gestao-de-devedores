@@ -9,6 +9,13 @@ const createDevedorValidator = vine.compile(
     cpf: vine.string().optional(),
     cnpj: vine.string().optional(),
     telefone: vine.string().optional(),
+    cep: vine.string().optional(),
+    rua: vine.string().optional(),
+    numero: vine.string().optional(),
+    complemento: vine.string().optional(),
+    bairro: vine.string().optional(),
+    cidade: vine.string().optional(),
+    uf: vine.string().maxLength(2).optional(),
   })
 )
 
@@ -18,6 +25,14 @@ const updateDevedorValidator = vine.compile(
     cpf: vine.string().optional(),
     cnpj: vine.string().optional(),
     telefone: vine.string().optional(),
+
+    cep: vine.string().optional(),
+    rua: vine.string().optional(),
+    numero: vine.string().optional(),
+    complemento: vine.string().optional(),
+    bairro: vine.string().optional(),
+    cidade: vine.string().optional(),
+    uf: vine.string().maxLength(2).optional(),
   })
 )
 
@@ -97,7 +112,19 @@ async index({ request }: HttpContext) {
 
   
   async store({ request, response }: HttpContext) {
-    let { nome, cpf, cnpj, telefone } = await request.validateUsing(createDevedorValidator)
+    let {
+  nome,
+  cpf,
+  cnpj,
+  telefone,
+  cep,
+  rua,
+  numero,
+  complemento,
+  bairro,
+  cidade,
+  uf,
+} = await request.validateUsing(createDevedorValidator)
 
   
     if (!cpf && !cnpj) {
@@ -123,10 +150,17 @@ async index({ request }: HttpContext) {
     }
 
     const devedor = await Devedor.create({
-      nome,
-      cpf,
-      cnpj,
-      telefone,
+       nome,
+       cpf,
+       cnpj,
+       telefone,
+       cep,
+       rua,
+       numero,
+       complemento,
+       bairro,
+       cidade,
+       uf,
     })
 
     return devedor
@@ -139,8 +173,19 @@ async index({ request }: HttpContext) {
     if (!devedor) {
       return response.notFound({ message: 'Devedor não encontrado' })
     }
-
-    let { nome, cpf, cnpj, telefone } = await request.validateUsing(updateDevedorValidator)
+    let {
+  nome,
+  cpf,
+  cnpj,
+  telefone,
+  cep,
+  rua,
+  numero,
+  complemento,
+  bairro,
+  cidade,
+  uf,
+} = await request.validateUsing(updateDevedorValidator)
 
 
     if (cpf || cnpj) {
@@ -164,11 +209,18 @@ async index({ request }: HttpContext) {
     telefone = telefone ? limparNumero(telefone) : undefined
 
     devedor.merge({
-      nome,
-      cpf,
-      cnpj,
-      telefone,
-    })
+  nome,
+  cpf,
+  cnpj,
+  telefone,
+  cep,
+  rua,
+  numero,
+  complemento,
+  bairro,
+  cidade,
+  uf,
+})
 
     await devedor.save()
 

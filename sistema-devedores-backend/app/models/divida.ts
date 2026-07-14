@@ -30,4 +30,26 @@ export default class Divida extends BaseModel {
 
   @belongsTo(() => Devedor)
   declare devedor: BelongsTo<typeof Devedor>
+
+
+  @column()
+declare cep: string | null
+
+ @column()
+declare rua: string | null
+
+ @column()
+declare numero: string | null
+
+ @column()
+declare complemento: string | null
+
+ @column()
+declare bairro: string | null
+
+ @column()
+declare cidade: string | null
+
+ @column()
+declare uf: string | null
 }

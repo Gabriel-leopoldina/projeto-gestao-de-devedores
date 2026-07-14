@@ -1,3 +1,6 @@
+import { useContext } from 'react'
+import { SidebarThemeContext } from '../contexts/SidebarThemeContext'
+
 import {
   Drawer,
   List,
@@ -21,6 +24,7 @@ const drawerWidth = 220
 
 export default function Layout() {
   const location = useLocation()
+  const { isDarkSidebar } = useContext(SidebarThemeContext)
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -45,9 +49,39 @@ export default function Layout() {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
-            // 1. Transformamos o Drawer em um container flexível em coluna
             display: 'flex',
-            flexDirection: 'column', 
+            flexDirection: 'column',
+
+            // 1. Cores de fundo e textos principais bem definidas para ambos os modos
+            backgroundColor: isDarkSidebar ? '#1e1e1e' : '#ffffff',
+            color: isDarkSidebar ? '#ffffff' : 'rgba(0, 0, 0, 0.87)',
+
+            // 2. Garante a cor correta para o texto de dentro dos itens
+            '& .MuiListItemText-root': {
+              color: isDarkSidebar ? '#ffffff' : 'rgba(0, 0, 0, 0.87)',
+            },
+
+            // 3. Ajuste para a cor dos ícones normais
+            '& .MuiListItemIcon-root': {
+              color: isDarkSidebar ? '#a1a1aa' : 'rgba(0, 0, 0, 0.54)',
+            },
+
+            // 4. Estilos do botão quando estiver selecionado (ativo)
+            '& .Mui-selected': {
+              backgroundColor: isDarkSidebar ? 'rgba(255, 255, 255, 0.08) !important' : 'rgba(25, 118, 210, 0.08) !important',
+              
+              '& .MuiListItemText-root': {
+                color: isDarkSidebar ? '#90caf9 !important' : '#1976d2 !important',
+              },
+              '& .MuiListItemIcon-root': {
+                color: isDarkSidebar ? '#90caf9 !important' : '#1976d2 !important',
+              }
+            },
+            
+            // 5. Ajuste para o hover (passar o mouse)
+            '& .MuiListItemButton-root:hover': {
+               backgroundColor: isDarkSidebar ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)'
+            }
           },
         }}
       >
@@ -65,14 +99,22 @@ export default function Layout() {
             <ListItemText primary="Início" />
           </ListItemButton>
 
-          <ListItemButton component={Link} to="/devedores">
+          <ListItemButton 
+            component={Link} 
+            to="/devedores"
+            selected={location.pathname === '/devedores'}
+          >
             <ListItemIcon>
               <GroupIcon />
             </ListItemIcon>
             <ListItemText primary="Devedores" />
           </ListItemButton>
 
-          <ListItemButton component={Link} to="/dividas">
+          <ListItemButton 
+            component={Link} 
+            to="/dividas"
+            selected={location.pathname === '/dividas'}
+          >
             <ListItemIcon>
               <AttachMoneyIcon />
             </ListItemIcon>
@@ -80,16 +122,18 @@ export default function Layout() {
           </ListItemButton>
         </List>
 
-        {/* 2. Envolvemos em um List com mt: 'auto' para jogar lá pro final */}
         <List sx={{ mt: 'auto' }}>
-          <ListItemButton component={Link} to="/configuracoes">
+          <ListItemButton 
+            component={Link} 
+            to="/configuracoes"
+            selected={location.pathname === '/configuracoes'}
+          >
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>
             <ListItemText primary="Configurações" />
           </ListItemButton>
         </List>
-        
       </Drawer>
 
       <Box
