@@ -5,12 +5,12 @@ import DevedoresPage from './pages/DevedoresPage.jsx'
 import DividasPage from './pages/DividasPage.jsx'
 import HomePage from './pages/HomePage'
 import TodasDividasPage from './pages/TodasDividasPage.jsx'
-import ConfiguracoesPage from './pages/ConfiguracoesPage.jsx' // <-- Importei a tela nova aqui!
+import ConfiguracoesPage from './pages/ConfiguracoesPage.jsx' 
 import { SidebarThemeProvider } from './contexts/SidebarThemeContext'
 
 export default function App() {
   return (
-    // O Provider abraça toda a aplicação para o tema funcionar em qualquer lugar
+    
     <SidebarThemeProvider>
       <BrowserRouter>
         <Routes>

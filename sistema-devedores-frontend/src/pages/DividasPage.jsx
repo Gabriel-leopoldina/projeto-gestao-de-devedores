@@ -201,7 +201,7 @@ export default function DividasPage() {
       <Stack spacing={2}>
         <Paper sx={{ p: 2 }}>
           
-          {/* Linha 1: Título e Botão Nova Dívida alinhados nas pontas */}
+
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -223,7 +223,6 @@ export default function DividasPage() {
             </Button>
           </Stack>
 
-          {/* Linha 2: Filtros e Botão de Pesquisar */}
           <Stack
             direction="row"
             spacing={2}
@@ -334,7 +333,7 @@ export default function DividasPage() {
         </DialogActions>
       </Dialog>
 
-      {/* Modal - Confirmar Exclusão */}
+      
       <Dialog open={openExcluir} onClose={fecharDialogExcluir}>
         <DialogTitle>
           Excluir dívida?

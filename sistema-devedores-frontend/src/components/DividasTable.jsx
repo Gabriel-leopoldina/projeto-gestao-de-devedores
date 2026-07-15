@@ -23,14 +23,12 @@ export default function DividasTable({
     return <CircularProgress />
   }
 
-
   function formatarDataBrasileira(dataString) {
     if (!dataString) return '-'
 
     const dataBruta = String(dataString).trim()
     const apenasData = dataBruta.split('T')[0] 
 
-   
     if (apenasData.includes('-')) {
       const [ano, mes, dia] = apenasData.split('-')
       return `${dia}/${mes}/${ano}`
@@ -76,115 +74,125 @@ export default function DividasTable({
     }
   }
 
- const rows = dividas.map((divida) => ({
-  id: divida.id,
+  const rows = dividas.map((divida) => ({
+    id: divida.id,
 
-  devedor: divida.devedor?.nome || '',
-  cpfCnpj: divida.devedor?.cpf || divida.devedor?.cnpj || '',
+    devedor: divida.devedor?.nome || '',
+    cpfCnpj: divida.devedor?.cpf || divida.devedor?.cnpj || '',
 
-  descricao: divida.descricao,
-  valor: Number(divida.valor).toFixed(2),
+    descricao: divida.descricao,
+    
+    // 🎯 Mantém como Número puro para a ordenação da coluna funcionar perfeitamente
+    valor: Number(divida.valor || 0), 
 
-  data_vencimento:
-    divida.data_vencimento ||
-    divida.dataVencimento ||
-    divida.vencimento,
+    data_vencimento:
+      divida.data_vencimento ||
+      divida.dataVencimento ||
+      divida.vencimento,
 
-  status: divida.status,
+    status: divida.status,
 
-  original: divida,
-}))
+    original: divida,
+  }))
 
-const columns = [
-  {
-    field: 'descricao',
-    headerName: 'Descrição',
-    flex: 1.5,
-    minWidth: 220,
-  },
-  {
-    field: 'valor',
-    headerName: 'Valor',
-    flex: 1,
-    minWidth: 120,
-    renderCell: (params) => <>R$ {params.value}</>,
-  },
-  {
-    field: 'data_vencimento',
-    headerName: 'Vencimento',
-    flex: 1,
-    minWidth: 150,
-    renderCell: (params) => formatarDataBrasileira(params.value),
-  },
-  {
-    field: 'status',
-    headerName: 'Status',
-    flex: 1,
-    minWidth: 150,
-    renderCell: (params) => {
-      const status = obterStatus(params.row.original)
-
-      return (
-        <Chip
-          label={status.texto}
-          color={status.cor}
-          size="small"
-        />
-      )
-    },
-  },
-  {
-    field: 'acoes',
-    headerName: 'Ações',
-    width: 150,
-    sortable: false,
-    filterable: false,
-    headerAlign: 'center',
-    align: 'center',
-    renderCell: (params) => (
-      <Stack
-        direction="row"
-        spacing={1}
-        justifyContent="center"
-        alignItems="center"
-        sx={{ height: '100%' }}
-      >
-        <IconButton
-          color="primary"
-          onClick={() => onEditar?.(params.row.original)}
-        >
-          <EditIcon />
-        </IconButton>
-
-        <IconButton
-          color="error"
-          onClick={() => onExcluir?.(params.row.original)}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Stack>
-    ),
-  },
-]
-
-if (mostrarDevedor) {
-  columns.unshift(
+  const columns = [
     {
-      field: 'cpfCnpj',
-      headerName: 'CPF/CNPJ',
-      flex: 1,
-      minWidth: 170,
-    },
-    {
-      field: 'devedor',
-      headerName: 'Devedor',
+      field: 'descricao',
+      headerName: 'Descrição',
       flex: 1.5,
       minWidth: 220,
-    }
-  )
-}
+    },
+    {
+      field: 'valor',
+      headerName: 'Valor',
+      flex: 1,
+      minWidth: 120,
+      
+      renderCell: (params) => {
+        return (
+          <>
+            {params.value.toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            })}
+          </>
+        )
+      },
+    },
+    {
+      field: 'data_vencimento',
+      headerName: 'Vencimento',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => formatarDataBrasileira(params.value),
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => {
+        const status = obterStatus(params.row.original)
 
-  
+        return (
+          <Chip
+            label={status.texto}
+            color={status.cor}
+            size="small"
+          />
+        )
+      },
+    },
+    {
+      field: 'acoes',
+      headerName: 'Ações',
+      width: 150,
+      sortable: false,
+      filterable: false,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <Stack
+          direction="row"
+          spacing={1}
+          justifyContent="center"
+          alignItems="center"
+          sx={{ height: '100%' }}
+        >
+          <IconButton
+            color="primary"
+            onClick={() => onEditar?.(params.row.original)}
+          >
+            <EditIcon />
+          </IconButton>
+
+          <IconButton
+            color="error"
+            onClick={() => onExcluir?.(params.row.original)}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ]
+
+  if (mostrarDevedor) {
+    columns.unshift(
+      {
+        field: 'cpfCnpj',
+        headerName: 'CPF/CNPJ',
+        flex: 1,
+        minWidth: 170,
+      },
+      {
+        field: 'devedor',
+        headerName: 'Devedor',
+        flex: 1.5,
+        minWidth: 220,
+      }
+    )
+  }
 
   if (rows.length === 0) {
     return (
