@@ -120,6 +120,8 @@ const columns = [
     field: 'status',
     headerName: 'Status',
     flex: 1,
+    headerAlign: 'center',
+    align: 'center',
     minWidth: 150,
     renderCell: (params) => {
       const status = obterStatus(params.row.original)
@@ -133,38 +135,7 @@ const columns = [
       )
     },
   },
-  {
-    field: 'acoes',
-    headerName: 'Ações',
-    width: 150,
-    sortable: false,
-    filterable: false,
-    headerAlign: 'center',
-    align: 'center',
-    renderCell: (params) => (
-      <Stack
-        direction="row"
-        spacing={1}
-        justifyContent="center"
-        alignItems="center"
-        sx={{ height: '100%' }}
-      >
-        <IconButton
-          color="primary"
-          onClick={() => onEditar?.(params.row.original)}
-        >
-          <EditIcon />
-        </IconButton>
 
-        <IconButton
-          color="error"
-          onClick={() => onExcluir?.(params.row.original)}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Stack>
-    ),
-  },
 ]
 
 if (mostrarDevedor) {
