@@ -83,7 +83,7 @@ export default function DividasTable({
   cpfCnpj: divida.devedor?.cpf || divida.devedor?.cnpj || '',
 
   descricao: divida.descricao,
-  valor: Number(divida.valor).toFixed(2),
+  valor: Number(divida.valor || 0),
 
   data_vencimento:
     divida.data_vencimento ||
@@ -102,13 +102,23 @@ const columns = [
     flex: 1.5,
     minWidth: 220,
   },
-  {
-    field: 'valor',
-    headerName: 'Valor',
-    flex: 1,
-    minWidth: 120,
-    renderCell: (params) => <>R$ {params.value}</>,
+ {
+  field: 'valor',
+  headerName: 'Valor',
+  flex: 1,
+  minWidth: 120,
+  renderCell: (params) => {
+    
+    return (
+      <>
+        {params.value.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        })}
+      </>
+    );
   },
+},
   {
     field: 'data_vencimento',
     headerName: 'Vencimento',

@@ -358,7 +358,6 @@ export default function DividasPage() {
         </DialogActions>
       </Dialog>
 
-      {/* Notificação de Erros */}
       <Snackbar 
         open={!!erro} 
         autoHideDuration={5000} 
