@@ -78,7 +78,7 @@ export default function DevedoresPage() {
     setDevedorExcluir(null)
   }
   
-  // 🎯 CORREÇÃO: Função unificada buscando na API e removido o código fantasma que quebrava a página
+  
   async function pesquisar() {
     setLoading(true)
     try {

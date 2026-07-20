@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../services/api'
 
 import DividasTable from '../components/TodasDividasTable' 
+import { formatarDocumento } from '../formatadores'
 
 import { Grid, Paper, Typography, Stack, Box, CircularProgress } from '@mui/material'
 

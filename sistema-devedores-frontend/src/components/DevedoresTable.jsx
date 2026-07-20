@@ -8,34 +8,14 @@ import {
 
 import { DataGrid } from '@mui/x-data-grid'
 
+import { formatarDocumento } from '../formatadores'
+
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { useNavigate } from 'react-router-dom'
 
-function formatarDocumento(documento) {
-  if (!documento) return ''
 
-  const numero = documento.replace(/\D/g, '')
-
-  if (numero.length === 11) {
-    return numero.replace(
-      /(\d{3})(\d{3})(\d{3})(\d{2})/,
-      '$1.$2.$3-$4'
-    )
-  }
-
-  if (numero.length === 14) {
-    return numero.replace(
-      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
-      '$1.$2.$3/$4-$5'
-    )
-  }
-
-
-
-  return documento
-}
 
 function formatarTelefone(telefone) {
   if (!telefone) return ''

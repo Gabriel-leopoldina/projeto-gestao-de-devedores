@@ -9,6 +9,8 @@ import {
 
 import { DataGrid } from '@mui/x-data-grid'
 
+import { formatarDocumento, formatarDataBrasileira } from '../formatadores'
+
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 
@@ -21,22 +23,6 @@ export default function DividasTable({
 }) {
   if (loading) {
     return <CircularProgress />
-  }
-
-
-  function formatarDataBrasileira(dataString) {
-    if (!dataString) return '-'
-
-    const dataBruta = String(dataString).trim()
-    const apenasData = dataBruta.split('T')[0] 
-
-   
-    if (apenasData.includes('-')) {
-      const [ano, mes, dia] = apenasData.split('-')
-      return `${dia}/${mes}/${ano}`
-    }
-
-    return apenasData
   }
 
   function obterStatus(divida) {
@@ -76,96 +62,88 @@ export default function DividasTable({
     }
   }
 
- const rows = dividas.map((divida) => ({
-  id: divida.id,
+  const rows = dividas.map((divida) => ({
+    id: divida.id,
+    devedor: divida.devedor?.nome || '',
+    cpfCnpj: divida.devedor?.cpf || divida.devedor?.cnpj || '',
+    descricao: divida.descricao,
+    valor: Number(divida.valor || 0),
+    data_vencimento:
+      divida.data_vencimento ||
+      divida.dataVencimento ||
+      divida.vencimento,
+    status: divida.status,
+    original: divida,
+  }))
 
-  devedor: divida.devedor?.nome || '',
-  cpfCnpj: divida.devedor?.cpf || divida.devedor?.cnpj || '',
-
-  descricao: divida.descricao,
-  valor: Number(divida.valor || 0),
-
-  data_vencimento:
-    divida.data_vencimento ||
-    divida.dataVencimento ||
-    divida.vencimento,
-
-  status: divida.status,
-
-  original: divida,
-}))
-
-const columns = [
-  {
-    field: 'descricao',
-    headerName: 'Descrição',
-    flex: 1.5,
-    minWidth: 220,
-  },
- {
-  field: 'valor',
-  headerName: 'Valor',
-  flex: 1,
-  minWidth: 120,
-  renderCell: (params) => {
-    
-    return (
-      <>
-        {params.value.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL'
-        })}
-      </>
-    );
-  },
-},
-  {
-    field: 'data_vencimento',
-    headerName: 'Vencimento',
-    flex: 1,
-    minWidth: 150,
-    renderCell: (params) => formatarDataBrasileira(params.value),
-  },
-  {
-    field: 'status',
-    headerName: 'Status',
-    flex: 1,
-    headerAlign: 'center',
-    align: 'center',
-    minWidth: 150,
-    renderCell: (params) => {
-      const status = obterStatus(params.row.original)
-
-      return (
-        <Chip
-          label={status.texto}
-          color={status.cor}
-          size="small"
-        />
-      )
-    },
-  },
-
-]
-
-if (mostrarDevedor) {
-  columns.unshift(
+  const columns = [
     {
-      field: 'cpfCnpj',
-      headerName: 'CPF/CNPJ',
-      flex: 1,
-      minWidth: 170,
-    },
-    {
-      field: 'devedor',
-      headerName: 'Devedor',
+      field: 'descricao',
+      headerName: 'Descrição',
       flex: 1.5,
       minWidth: 220,
-    }
-  )
-}
+    },
+    {
+      field: 'valor',
+      headerName: 'Valor',
+      flex: 1,
+      minWidth: 120,
+      renderCell: (params) => {
+        return (
+          <>
+            {params.value.toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL'
+            })}
+          </>
+        );
+      },
+    },
+    {
+      field: 'data_vencimento',
+      headerName: 'Vencimento',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => formatarDataBrasileira(params.value), 
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      flex: 1,
+      headerAlign: 'center',
+      align: 'center',
+      minWidth: 150,
+      renderCell: (params) => {
+        const status = obterStatus(params.row.original)
 
-  
+        return (
+          <Chip
+            label={status.texto}
+            color={status.cor}
+            size="small"
+          />
+        )
+      },
+    },
+  ]
+
+  if (mostrarDevedor) {
+    columns.unshift(
+      {
+        field: 'cpfCnpj',
+        headerName: 'CPF/CNPJ',
+        flex: 1,
+        minWidth: 170,
+        renderCell: (params) => formatarDocumento(params.value), 
+      },
+      {
+        field: 'devedor',
+        headerName: 'Devedor',
+        flex: 1.5,
+        minWidth: 220,
+      }
+    )
+  }
 
   if (rows.length === 0) {
     return (

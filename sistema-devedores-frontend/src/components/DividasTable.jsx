@@ -9,6 +9,8 @@ import {
 
 import { DataGrid } from '@mui/x-data-grid'
 
+import { formatarDataBrasileira } from '../formatadores'
+
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 
@@ -23,19 +25,6 @@ export default function DividasTable({
     return <CircularProgress />
   }
 
-  function formatarDataBrasileira(dataString) {
-    if (!dataString) return '-'
-
-    const dataBruta = String(dataString).trim()
-    const apenasData = dataBruta.split('T')[0] 
-
-    if (apenasData.includes('-')) {
-      const [ano, mes, dia] = apenasData.split('-')
-      return `${dia}/${mes}/${ano}`
-    }
-
-    return apenasData
-  }
 
   function obterStatus(divida) {
     if (divida.status === 'PAGA') {
@@ -82,7 +71,6 @@ export default function DividasTable({
 
     descricao: divida.descricao,
     
-    // 🎯 Mantém como Número puro para a ordenação da coluna funcionar perfeitamente
     valor: Number(divida.valor || 0), 
 
     data_vencimento:
