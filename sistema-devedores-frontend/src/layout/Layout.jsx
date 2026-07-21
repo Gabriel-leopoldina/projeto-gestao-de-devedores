@@ -11,20 +11,28 @@ import {
   AppBar,
   Typography,
   Box,
+  IconButton,
 } from '@mui/material'
 
 import GroupIcon from '@mui/icons-material/Group'
 import HomeIcon from '@mui/icons-material/Home'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import SettingsIcon from '@mui/icons-material/Settings'
+import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined'
 
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 
 const drawerWidth = 220
 
 export default function Layout() {
   const location = useLocation()
+  const navigate = useNavigate()
   const { isDarkSidebar } = useContext(SidebarThemeContext)
+
+  function handleLogout() {
+    localStorage.removeItem('token')
+    navigate('/login')
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -35,9 +43,20 @@ export default function Layout() {
         }}
       >
         <Toolbar>
-          <Typography variant="h6">
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Sistema de Devedores
           </Typography>
+          <IconButton
+            color="inherit"
+            onClick={handleLogout}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              },
+            }}
+          >
+            <ExitToAppOutlinedIcon sx={{ fontSize: '28px' }} />
+          </IconButton>
         </Toolbar>
       </AppBar>
 
@@ -52,21 +71,17 @@ export default function Layout() {
             display: 'flex',
             flexDirection: 'column',
 
-            // 1. Cores de fundo e textos principais bem definidas para ambos os modos
             backgroundColor: isDarkSidebar ? '#1e1e1e' : '#ffffff',
             color: isDarkSidebar ? '#ffffff' : 'rgba(0, 0, 0, 0.87)',
 
-            // 2. Garante a cor correta para o texto de dentro dos itens
             '& .MuiListItemText-root': {
               color: isDarkSidebar ? '#ffffff' : 'rgba(0, 0, 0, 0.87)',
             },
 
-            // 3. Ajuste para a cor dos ícones normais
             '& .MuiListItemIcon-root': {
               color: isDarkSidebar ? '#a1a1aa' : 'rgba(0, 0, 0, 0.54)',
             },
 
-            // 4. Estilos do botão quando estiver selecionado (ativo)
             '& .Mui-selected': {
               backgroundColor: isDarkSidebar ? 'rgba(255, 255, 255, 0.08) !important' : 'rgba(25, 118, 210, 0.08) !important',
               
@@ -78,7 +93,6 @@ export default function Layout() {
               }
             },
             
-            // 5. Ajuste para o hover (passar o mouse)
             '& .MuiListItemButton-root:hover': {
                backgroundColor: isDarkSidebar ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)'
             }
