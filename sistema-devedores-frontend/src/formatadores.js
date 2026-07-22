@@ -38,3 +38,36 @@ export function formatarDataBrasileira(dataString) {
 
     return apenasData
   }
+
+
+export function formatarTelefone(telefone) {
+  if (!telefone) return ''
+
+  const numero = telefone.replace(/\D/g, '')
+
+  if (numero.length === 11) {
+    return numero.replace(
+      /(\d{2})(\d{5})(\d{4})/,
+      '($1) $2-$3'
+    )
+  }
+
+  if (numero.length === 10) {
+    return numero.replace(
+      /(\d{2})(\d{4})(\d{4})/,
+      '($1) $2-$3'
+    )
+  }
+
+  return telefone
+}
+
+export function formatarCep(valor) {
+  const apenasNumeros = valor.replace(/\D/g, '')
+  const limitado = apenasNumeros.slice(0, 8)     
+  
+  if (limitado.length > 5) {
+    return `${limitado.slice(0, 5)}-${limitado.slice(5)}`
+  }
+  return limitado
+}

@@ -8,36 +8,12 @@ import {
 
 import { DataGrid } from '@mui/x-data-grid'
 
-import { formatarDocumento } from '../formatadores'
+import { formatarDocumento, formatarTelefone } from '../formatadores'
 
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import { useNavigate } from 'react-router-dom'
-
-
-
-function formatarTelefone(telefone) {
-  if (!telefone) return ''
-
-  const numero = telefone.replace(/\D/g, '')
-
-  if (numero.length === 11) {
-    return numero.replace(
-      /(\d{2})(\d{5})(\d{4})/,
-      '($1) $2-$3'
-    )
-  }
-
-  if (numero.length === 10) {
-    return numero.replace(
-      /(\d{2})(\d{4})(\d{4})/,
-      '($1) $2-$3'
-    )
-  }
-
-  return telefone
-}
 
 export default function DevedoresTable({
   devedores,

@@ -17,15 +17,7 @@ import {
 
 import SearchIcon from '@mui/icons-material/Search' 
 
-function formatarCep(valor) {
-  const apenasNumeros = valor.replace(/\D/g, '')
-  const limitado = apenasNumeros.slice(0, 8)     
-  
-  if (limitado.length > 5) {
-    return `${limitado.slice(0, 5)}-${limitado.slice(5)}`
-  }
-  return limitado
-}
+import { formatarDocumento, formatarTelefone, formatarCep } from '../formatadores'
 
 export default function NovoDevedorDialog({
   open,

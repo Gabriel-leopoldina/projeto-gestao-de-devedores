@@ -2,17 +2,20 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../services/api'
 
+
 import {
   Box,
   Button,
-  Container,
   Paper,
   TextField,
   Typography,
   InputAdornment,
   IconButton,
-  Alert
+  Alert,
+  Grid,
+  CssBaseline
 } from '@mui/material'
+
 
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
@@ -36,52 +39,59 @@ export function Login() {
       const token = response.data.token
 
       localStorage.setItem('token', token)
-      navigate('/')
+      navigate('/') 
 
     } catch (err) {
-      setErrorMessage('Usuário e/ou Senha Incorretos.')
+      setErrorMessage('E-mail ou senha incorretos. Tente novamente.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
+    <Grid container component="main" sx={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+      <CssBaseline />
+
+    
+      <Grid 
+        item 
+        xs={12} 
+        sm={8} 
+        md={5} 
+        component={Paper} 
+        elevation={6} 
+        square
         sx={{
-          marginTop: 8,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          minHeight: '80vh'
+          px: 4
         }}
       >
-        <Paper 
-          elevation={3} 
-          sx={{ 
-            padding: 4, 
-            display: 'flex', 
-            flexDirection: 'column', 
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
             width: '100%',
-            borderRadius: 2
+            maxWidth: '400px'
           }}
         >
-          <Typography component="h1" variant="h5" align="center" fontWeight="bold" gutterBottom>
+          <Typography component="h1" variant="h4" align="center" fontWeight="bold" gutterBottom>
             Acessar Sistema
           </Typography>
           <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
             Gerenciamento de Devedores
           </Typography>
 
-          
           {errorMessage && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 2, width: '100%' }}>
               {errorMessage}
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleLogin} sx={{ mt: 1, width: '100%' }}>
             <TextField
               margin="normal"
               required
@@ -106,7 +116,6 @@ export function Login() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -133,8 +142,24 @@ export function Login() {
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
           </Box>
-        </Paper>
-      </Box>
-    </Container>
+        </Box>
+      </Grid>
+
+      
+      <Grid
+        item
+        xs={false}
+        sm={4}
+        md={7}
+        sx={{
+          backgroundImage: 'url(https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=1600&auto=format&fit=crop)',
+          backgroundRepeat: 'no-repeat',
+          backgroundColor: (t) =>
+            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+    </Grid>
   )
 }
