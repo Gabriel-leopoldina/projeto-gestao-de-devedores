@@ -8,14 +8,16 @@ import TodasDividasPage from './pages/TodasDividasPage.jsx'
 import ConfiguracoesPage from './pages/ConfiguracoesPage.jsx' 
 import { Login } from './pages/Login.jsx'
 import { SidebarThemeProvider } from './contexts/SidebarThemeContext'
+import { Register } from './pages/Register'
 
 export default function App() {
   return (
     <SidebarThemeProvider>
-      <BrowserRouter>
+      <BrowserRouter> 
         <Routes>
 
           <Route path="/login" element={<Login />} />
+          <Route path="/cadastrar-usuario" element={<Register />} />
 
           <Route element={<Layout />}>
             

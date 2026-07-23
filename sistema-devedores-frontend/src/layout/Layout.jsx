@@ -12,6 +12,7 @@ import {
   Typography,
   Box,
   IconButton,
+  Tooltip
 } from '@mui/material'
 
 import GroupIcon from '@mui/icons-material/Group'
@@ -19,6 +20,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import SettingsIcon from '@mui/icons-material/Settings'
 import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined'
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 
@@ -46,17 +48,37 @@ export default function Layout() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Sistema de Devedores
           </Typography>
-          <IconButton
-            color="inherit"
-            onClick={handleLogout}
-            sx={{
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              },
-            }}
-          >
-            <ExitToAppOutlinedIcon sx={{ fontSize: '28px' }} />
-          </IconButton>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        
+            <Tooltip title="Cadastrar Usuário">
+              <IconButton 
+                color="inherit" 
+                onClick={() => navigate('/cadastrar-usuario')}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                <AccountCircleOutlinedIcon sx={{ fontSize: '26px' }} />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Sair">
+              <IconButton
+                color="inherit"
+                onClick={handleLogout}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                <ExitToAppOutlinedIcon sx={{ fontSize: '28px' }} />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Toolbar>
       </AppBar>
 

@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../services/api'
 
-
 import {
   Box,
   Button,
@@ -12,16 +11,16 @@ import {
   InputAdornment,
   IconButton,
   Alert,
-  Grid,
   CssBaseline
 } from '@mui/material'
 
-
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 
 export function Login() {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -35,131 +34,171 @@ export function Login() {
     setLoading(true)
 
     try {
-      const response = await api.post('/login', { email, password })
+      const response = await api.post('/login', { username, password })
       const token = response.data.token
 
       localStorage.setItem('token', token)
       navigate('/') 
 
     } catch (err) {
-      setErrorMessage('E-mail ou senha incorretos. Tente novamente.')
+      setErrorMessage('Usuário e/ou Senha Incorretos.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Grid container component="main" sx={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    
+    <Box
+      sx={{
+        height: '100vh',
+        width: '100vw',
+        backgroundColor: '#f3f4f6',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        p: 2,
+        boxSizing: 'border-box',
+        overflow: 'hidden'
+      }}
+    >
       <CssBaseline />
 
-    
-      <Grid 
-        item 
-        xs={12} 
-        sm={8} 
-        md={5} 
-        component={Paper} 
-        elevation={6} 
-        square
+      <Box
         sx={{
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          px: 4
+          width: '100%',
+          height: '100%',
+          gap: 2,
         }}
       >
+        
         <Box
           sx={{
+            flex: 1,
+            backgroundImage: 'url(/imagemfundo.png)',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover', 
+            backgroundPosition: 'center',
+            borderRadius: '24px',
+            display: { xs: 'none', md: 'block' },
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.04)'
+          }}
+        />
+
+        <Paper
+          elevation={0}
+          sx={{
+            width: { xs: '100%', md: '420px' },
+            height: '100%',
+            borderRadius: '24px',
+            p: { xs: 3, sm: 5 },
             display: 'flex',
             flexDirection: 'column',
+            justifyContent: 'center',
             alignItems: 'center',
-            width: '100%',
-            maxWidth: '400px'
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.05)',
           }}
         >
-          <Typography component="h1" variant="h4" align="center" fontWeight="bold" gutterBottom>
-            Acessar Sistema
-          </Typography>
-          <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
-            Gerenciamento de Devedores
-          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              width: '100%',
+              maxWidth: '360px'
+            }}
+          >
+            <Typography component="h1" variant="h5" align="center" fontWeight="bold" gutterBottom>
+              Gerenciamento de Devedores
+            </Typography>
 
-          {errorMessage && (
-            <Alert severity="error" sx={{ mb: 2, width: '100%' }}>
-              {errorMessage}
-            </Alert>
-          )}
+            {errorMessage && (
+              <Alert severity="error" sx={{ mb: 2, width: '100%', borderRadius: '12px' }}>
+                {errorMessage}
+              </Alert>
+            )}
 
-          <Box component="form" onSubmit={handleLogin} sx={{ mt: 1, width: '100%' }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="E-mail"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Senha"
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+            <Box component="form" onSubmit={handleLogin} sx={{ width: '100%' }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="usuário"
+                label="Usuário"
+                name="usuário"
+                autoComplete="usuário"
+                autoFocus
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PersonOutlineIcon color="action" />
+                    </InputAdornment>
+                  ),
+                  sx: { borderRadius: '12px' }
+                }}
+              />
+              
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Senha"
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockOutlinedIcon color="action" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  sx: { borderRadius: '12px' }
+                }}
+              />
 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              size="large"
-              disabled={loading}
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
-            >
-              {loading ? 'Entrando...' : 'Entrar'}
-            </Button>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                size="large"
+                disabled={loading}
+                sx={{
+                  mt: 4,
+                  mb: 2,
+                  py: 1.5,
+                  borderRadius: '12px',
+                  textTransform: 'none',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  boxShadow: 'none',
+                  '&:hover': {
+                    boxShadow: 'none'
+                  }
+                }}
+              >
+                {loading ? 'Aguarde...' : 'Entrar'}
+              </Button>
+            </Box>
           </Box>
-        </Box>
-      </Grid>
-
-      
-      <Grid
-        item
-        xs={false}
-        sm={4}
-        md={7}
-        sx={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=1600&auto=format&fit=crop)',
-          backgroundRepeat: 'no-repeat',
-          backgroundColor: (t) =>
-            t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
-    </Grid>
+        </Paper>
+      </Box>
+    </Box>
   )
 }
